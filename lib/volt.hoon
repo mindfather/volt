@@ -1,7 +1,7 @@
 ::
 ::  lib/volt.hoon
 ::
-/-  spider, volt=volt
+/-  spider, volt=volt, bc=bitcoin
 /+  *strandio
 =,  strand=strand:spider
 |%
@@ -25,7 +25,7 @@
         (fail-htlc +.act)
       ==
       ++  open-channel
-        |=  [=pubkey:volt local-amt=sats:volt push-amt=sats:volt]
+        |=  [=pubkey:volt local-amt=sats:bc push-amt=sats:bc]
         ^-  json
         %-  pairs
         :~  ['node_pubkey' [%s (en:base64:mimes:html pubkey)]]
@@ -34,7 +34,7 @@
         ==
       ::
       ++  settle-htlc
-        |=  [ck=circuit-key:rpc:volt preimage=octs]
+        |=  [ck=circuit-key:rpc:volt preimage=hexb:bc]
         ^-  json
         %-  pairs
         :~  ['circuit_key' (circuit-key ck)]
@@ -284,10 +284,5 @@
       ?:  =(status 200)
         [%& (result:dejs act u.jon)]
         [%| (error:dejs u.jon)]
-  --
-::
-++  provider
-  |%
-  ::
   --
 --

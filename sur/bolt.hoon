@@ -1,7 +1,7 @@
 ::  bolt.hoon
 ::  Datatypes to implement Lightning BOLT RFCs.
 ::
-/-  bc=bitcoin, bp=btc-provider
+/-  bc=bitcoin, bw=btc-wallet, bp=btc-provider
 |%
 +$  id  @ud
 +$  pubkey  hexb:bc
@@ -13,6 +13,7 @@
 +$  point  point:secp:crypto
 +$  blocks  @ud                               ::  number of blocks
 +$  msats  @ud                                ::  millisats
++$  network  ?(%main %testnet %regtest)
 ::  +tx
 ::   modifications to bitcoin tx types, to be merged back later
 ::
@@ -97,6 +98,7 @@
       fs=(unit funding-signed:msg)
       fl-funder=(unit funding-locked:msg)
       fl-fundee=(unit funding-locked:msg)
+      initiator=?
   ==
 ::  chan: channel state
 ::
@@ -128,7 +130,7 @@
   ::
   +$  open-channel
     $:  chain-hash=hexb:bc
-        temporary-channel-id=hexb:bc
+        =temporary-channel=id
         =funding=sats:bc
         =push=msats
         =funding=pubkey
@@ -146,7 +148,8 @@
         anchor-outputs=?
     ==
   +$  accept-channel
-    $:  =funding=pubkey
+    $:  =temporary-channel=id
+        =funding=pubkey
         dust-limit=sats:bc
         max-htlc-value-in-flight=msats
         channel-reserve=sats:bc
@@ -159,7 +162,7 @@
         =shutdown-script=pubkey
     ==
   +$  funding-created
-    $:  temporary-channel-id=hexb:bc
+    $:  =temporary-channel=id
         =funding=outpoint
         =signature
     ==
@@ -172,7 +175,7 @@
         =next-per-commitment=point
     ==
   ::
-  ::  HTLC Messages
+  ::  HTLC messages
   ::
   +$  add-signed-htlc
     $:  add=update-add-htlc
@@ -181,6 +184,21 @@
   +$  update-add-htlc
     $:  =channel=id
         =htlc=id
+    ==
+  +$  update-fail-htlc
+    $:  =channel=id
+        id=@ud
+        reason=tape
+    ==
+  +$  update-fulfill-htlc
+    $:  =channel=id
+        id=@ud
+        payment-preimage=hexb:bc
+    ==
+  +$  update-fail-malformed-htlc
+    $:  =channel=id
+        id=@ud
+        cod=@ud
     ==
   +$  commitment-signed
     $:  =channel=id
@@ -194,23 +212,98 @@
         per-commitment-secret=hexb:bc
         next-per-commitment-point=point
     ==
+  ::
+  ::  channel close messages
+  ::
+  +$  shutdown
+    $:  =channel=id
+        len=@ud
+        =script=pubkey
+    ==
+  +$  closing-signed
+    $:  =channel=id
+        fee=sats:bc
+        sig=signature
+    ==
+  ::
+  +$  update-fee
+    $:  =channel=id
+        feerate-per-kw=sats:bc
+    ==
   --
-  ::
-  +$  message
-    $%  [%open-channel open-channel:msg]
-        [%accept-channel accept-channel:msg]
-        [%funding-created funding-created:msg]
-        [%funding-signed funding-signed:msg]
-        [%funding-locked funding-locked:msg]
-::        [%shutdown shutdown:msg]
-::        [%closing-signed closing-signed:msg]
-        [%update-add-htlc update-add-htlc:msg]
-        [%commitment-signed commitment-signed:msg]
-        [%revoke-and-ack revoke-and-ack:msg]
-    ==
-  ::
-  +$  state
-    $:  chans=(map id chan)
-        pending=(map id larva-chan)
-    ==
+::
++$  funding-message
+  $%  [%open-channel open-channel:msg]
+      [%accept-channel accept-channel:msg]
+      [%funding-created funding-created:msg]
+      [%funding-signed funding-signed:msg]
+      [%funding-locked funding-locked:msg]
+  ==
+::
++$  closing-message
+  $%  [%shutdown shutdown:msg]
+      [%closing-signed closing-signed:msg]
+  ==
+::
++$  htlc-message
+  $%  [%update-add-htlc update-add-htlc:msg]
+      [%update-fail-htlc update-fail-htlc:msg]
+      [%update-fulfill-htlc update-fulfill-htlc:msg]
+      [%update-fail-malformed-htlc update-fail-malformed-htlc:msg]
+      [%commitment-signed commitment-signed:msg]
+      [%revoke-and-ack revoke-and-ack:msg]
+  ==
+::
++$  message
+  $%  [%funding funding-message]
+      [%closing closing-message]
+      [%htlc htlc-message]
+      [%update-fee update-fee:msg]
+  ==
+::
++$  reject-reason
+  $?  %chan-too-large
+      %chan-too-small
+      %push-rejected
+      %push-too-large
+      %delay-too-large
+      %max-htlc-too-large
+      %fee-too-small
+  ==
+::
++$  peer
+  $:  chans=(map id chan)
+      num-chans=@ud
+      pending=(map id larva-chan)
+      num-pending=@ud
+  ==
+::
++$  config
+  $:  min-chan-size=sats:bc
+      max-chan-size=sats:bc
+      max-pending=@ud
+      reject-push=?
+      max-local-csv-delay=@ud
+      min-htlc-value=msats
+  ==
+::
+::  wallet types
+::
++$  fam
+  $?  %multisig
+      %revocation-base
+      %htlc-base
+      %payment-base
+      %delay-base
+      %revocation-root
+  ==
+::
++$  keyr
+  $:  =wamp:bw
+      =network:bc
+      idxs=(map fam idx:bc)
+  ==
+::
++$  keyd  [=fam ind=@ud key=point]
+::
 --

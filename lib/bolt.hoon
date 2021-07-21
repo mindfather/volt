@@ -2,7 +2,7 @@
 ::  Library functions to implement Lightning BOLT RFCs.
 ::
 /-  *bolt
-/+  bc=bitcoin, bcu=bitcoin-utils, btc-script=bolt-script
+/+  bc=bitcoin, bcu=bitcoin-utils, btc-script=bolt-script, bip32
 |%
 ::  +bolt-tx
 ::    helpers for building & signing commitment/HTLC txs
@@ -18,6 +18,11 @@
     |=  a=msats
     ^-  sats:bc
     (div a 1.000)
+  ::
+  ++  sats-to-msats
+    |=  a=sats:bc
+    ^-  msats
+    (mul a 1.000)
   ::
   ++  fee-by-weight
     |=  [feerate-per-kw=@ud weight=@ud]
@@ -1066,5 +1071,192 @@
     %+  next
       seed
     first-index
+  --
+::
+++  const
+  |%
+  ++  min-remote-delay       144
+  ++  max-remote-delay       2.016
+  ++  min-chan-funding-size  20.000
+  ++  max-funding-amount     16.777.216
+  ++  max-htlc-number        966
+  ++  min-conf               3
+  ++  max-conf               6
+  --
+::
+++  config
+  |_  c=^config
+  ::
+  ++  num-required-confs
+    |=  [amt=sats:bc push=msats]
+    |^  ^-  @ud
+    ?:  (gth amt max-funding-amount:const)
+      max-conf:const
+    ?:  (lth conf min-conf:const)
+      min-conf:const
+    ?:  (gth conf max-conf:const)
+      max-conf:const
+    conf
+    ::
+    ++  max-size
+      ^-  msats
+      %-  sats-to-msats:bolt-tx
+      max-funding-amount:const
+    ::
+    ++  stake
+      ^-  msats
+      %+  add
+      %-  sats-to-msats:bolt-tx  amt
+      push
+    ::
+    ++  conf
+      %+  div
+      %+  mul  max-conf:const  stake
+      max-size
+    --
+  ::
+  ++  required-remote-chan-reserve
+    |=  [amt=sats:bc dust-limit=sats:bc]
+    |^  ^-  sats:bc
+    ?:  (lth reserve dust-limit)
+      dust-limit
+    reserve
+    ::
+    ++  reserve
+      ^-  sats:bc
+      %+  div
+        amt
+      100
+    --
+  ::
+  ++  required-remote-max-value
+    |=  amt=sats:bc
+    ^-  msats
+    %+  sub
+    %-  sats-to-msats:bolt-tx  amt
+    %-  sats-to-msats:bolt-tx  (div amt 100)
+  ::
+  ++  required-remote-delay
+    |=  amt=sats:bc
+    |^  ^-  blocks
+    ?:  (gth amt max-funding-amount:const)
+      max-remote-delay:const
+    ?:  (lth delay min-remote-delay:const)
+      min-remote-delay:const
+    ?:  (gth delay max-remote-delay:const)
+      max-remote-delay:const
+    delay
+    ::
+    ++  delay
+      %+  div
+        %+  mul
+          max-remote-delay:const
+        amt
+      max-funding-amount:const
+    --
+  ::
+  ++  required-remote-max-htlcs
+    |=  amt=sats:bc
+    (div max-htlc-number:const 2)
+  ::
+  ++  min-chan-size
+    ^-  sats:bc
+    min-chan-size.c
+  ::
+  ++  max-chan-size
+    ^-  sats:bc
+    max-chan-size.c
+  ::
+  ++  max-pending-chans
+    ^-  @ud
+    max-pending.c
+  ::
+  ++  reject-push
+    ^-  ?
+    reject-push.c
+  ::
+  ++  min-htlc-value
+    ^-  msats
+    min-htlc-value.c
+  --
+::
+++  keyring
+  |_  =keyr
+  ::
+  ++  en-fam
+    |=  =fam
+    ?-  fam
+      %multisig         0
+      %revocation-base  1
+      %htlc-base        2
+      %payment-base     3
+      %delay-base       4
+      %revocation-root  5
+    ==
+  ::
+  ++  coin-type
+    |=  =network:bc
+    ?-  network
+      %main     0
+      %testnet  1
+      %regtest  2
+    ==
+  ::
+  ++  from-seed
+    |=  seed=hexb:bc
+    |^  ^-  ^keyr
+    =|  keys=^keyr
+    keys(wamp wamp)
+    ::
+    ++  gen
+      %-  from-seed:bip32
+        seed
+    ::
+    ++  wamp
+      :*  prv=prv:gen
+          pub=pub:gen
+          cad=cad:gen
+          dep=dep:gen
+          ind=ind:gen
+          pif=pif:gen
+      ==
+    --
+  ::
+  ++  derive
+    |=  [=fam =idx:bc]
+    |^
+    %-  ~(derive-sequence bip32 wamp.keyr)
+    :~  pur
+        (coin-type network.keyr)
+        (en-fam fam)
+        0
+        idx
+     ==
+     ++  pur  1.337
+     --
+  ::
+  ++  derive-pubkey
+    |=  [=fam =idx:bc]
+    ^-  keyd
+    :*  fam=fam
+        ind=idx
+        key=pub:(derive fam idx)
+    ==
+  ::
+  ++  derive-privkey
+    |=  =keyd
+    |^  ^-  hexb:bc
+    [(met 3 key) key]
+    ++  key  prv:(derive fam.keyd ind.keyd)
+    --
+  ::
+  ++  next-pubkey
+    |=  =fam
+    =/  =idx:bc
+      (~(gut by idxs.keyr) fam 0)
+    :_  keyr(idxs (~(put by idxs.keyr) fam (add idx 1)))
+    %+  derive-pubkey
+      fam
+    idx
   --
 --

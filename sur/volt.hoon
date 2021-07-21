@@ -1,14 +1,13 @@
 ::
 :: sur/volt.hoon
 ::
-/-  sur=bitcoin
-=,  sur
+/-  bc=bitcoin
 |%
 ::
-+$  pubkey    hexb
-+$  txid      hexb
-+$  hash      hexb
-+$  preimage  hexb
++$  pubkey    hexb:bc
++$  txid      hexb:bc
++$  hash      hexb:bc
++$  preimage  hexb:bc
 ::
 +$  msats    @ud
 +$  chan-id  @ud
@@ -29,7 +28,7 @@
   |%
   +$  action
     $%  [%get-info ~]
-        [%open-channel node=pubkey local-amount=sats push-amount=sats]
+        [%open-channel node=pubkey local-amount=sats:bc push-amount=sats:bc]
         [%close-channel funding-txid=txid output-index=@ud]
         [%settle-htlc =circuit-key =preimage]
         [%fail-htlc =circuit-key]
@@ -71,11 +70,11 @@
         remote-pubkey=pubkey
         channel-point=@t
         =chan-id
-        capacity=sats
-        local-balance=sats
-        remote-balance=sats
-        commit-fee=sats
-        total-sent=sats
+        capacity=sats:bc
+        local-balance=sats:bc
+        remote-balance=sats:bc
+        commit-fee=sats:bc
+        total-sent=sats:bc
     ==
   ::
   +$  channel-close-summary
@@ -88,7 +87,7 @@
     ==
   ::
   +$  channel-point
-    $:  funding-txid=txid
+    $:  =funding=txid
         output-index=@ud
     ==
   ::
@@ -99,19 +98,19 @@
   ::
   +$  htlc-intercept-request
     $:  incoming-circuit-key=circuit-key
-        incoming-amount-msat=sats
+        incoming-amount-msat=sats:bc
         incoming-expiry=@ud
-        payment-hash=octs
+        payment-hash=hexb:bc
         outgoing-requested-chan-id=chan-id
-        outgoing-amount-msat=sats
+        outgoing-amount-msat=sats:bc
         outgoing-expiry=@ud
-        onion-blob=octs
+        onion-blob=hexb:bc
     ==
   ::
   +$  htlc-intercept-response
     $:  incoming-circuit-key=circuit-key
         action=htlc-action
-        preimage=(unit octs)
+        preimage=(unit hexb:bc)
     ==
   ::
   +$  htlc-action  ?(%'SETTLE' %'FAIL' %'RESUME')
@@ -131,15 +130,15 @@
   +$  channel-info
     $:  =chan-id
         active=?
-        local-balance=sats
-        remote-balance=sats
+        local-balance=sats:bc
+        remote-balance=sats:bc
         remote-pubkey=pubkey
         client=(unit ship)
     ==
   ::
   +$  command
     $%  [%set-url api-url=@t]
-        [%open-channel to=pubkey local-amt=sats push-amt=sats]
+        [%open-channel to=pubkey local-amt=sats:bc push-amt=sats:bc]
         [%close-channel funding-txid=txid output-index=@ud]
     ==
   ::
@@ -167,11 +166,12 @@
 ::
 +$  command
   $%  [%set-provider provider=ship]
+      [%open-channel to=ship local-amt=sats:bc push-amt=msats]
+      [%close-channel chan=chan-id]
   ==
 ::
 +$  action
   $%  [%settle-htlc =htlc-info:provider]
       [%fail-htlc =htlc-info:provider]
   ==
-::
 --
