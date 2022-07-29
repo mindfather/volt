@@ -7,5 +7,5 @@
   website+'https://urbit.org'
   license+'MIT'
   base+'volt'
-  site+/volt
+  glob-ames+[~zod 0v0]
 ==

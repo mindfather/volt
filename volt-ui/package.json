@@ -1,0 +1,20 @@
+{
+  "name": "volt-ui",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^3.0.0",
+    "vite-plugin-solid": "^2.3.0"
+  },
+  "dependencies": {
+    "@urbit/http-api": "^2.2.0",
+    "solid-js": "^1.4.7"
+  }
+}
