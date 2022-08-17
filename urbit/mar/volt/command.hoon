@@ -1,12 +1,15 @@
 /-  *volt
+/+  volt-json
+!:
 |_  cmd=command
-++  grab
-  |%
-  ++  noun  command
-  --
+++  grad  %noun
 ++  grow
   |%
   ++  noun  cmd
   --
-++  grad  %noun
+++  grab
+  |%
+  ++  noun  command
+  ++  json  command:dejs:volt-json
+  --
 --

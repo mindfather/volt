@@ -1,6 +1,7 @@
 ::  sur/volt.hoon
 ::
 /-  bc=bitcoin, bolt
+!:
 |%
 +$  pubkey    pubkey:bolt
 +$  txid      hexb:bc

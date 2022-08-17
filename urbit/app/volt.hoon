@@ -7,6 +7,7 @@
 /+  revocation=revocation-store, tx=transactions
 /+  keys=key-generation, secret=commitment-secret
 /+  bolt=utilities, channel, psbt, ring
+!:
 |%
 +$  card  card:agent:gall
 +$  versioned-state
