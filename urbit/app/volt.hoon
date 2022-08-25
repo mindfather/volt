@@ -139,6 +139,7 @@
       ==
     [cards this]
   ::
+  :: :~  (give-update [%ack-received `@tas`%set-provider])
       %watch-ack
     ?:  ?=(%set-provider -.wire)
       ?~  p.sign
@@ -167,7 +168,23 @@
   ==
 ::
 ++  on-arvo   on-arvo:def
-++  on-peek   on-peek:def
+++  on-peek
+  |=  =path
+  ^-  (unit (unit cage))
+  ?+  path  (on-peek:def path)
+      [%x %provider ~]
+    =/  result=json
+      %-  pairs:enjs:format
+      ?~  volt.prov
+        ~
+      :~  [%'provider' (ship:enjs:format host.u.volt.prov)]
+          [%'connected' b+connected.u.volt.prov]
+      ==
+    ~&  result
+    ``json+!>(result)
+  ::
+  ==
+::
 ++  on-leave  on-leave:def
 ++  on-fail   on-fail:def
 --

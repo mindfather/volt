@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [solidPlugin()],
   base: '/apps/volt/',
   server: {
-    port: 3000,
+    port: 3000
   },
   build: {
     target: 'esnext',

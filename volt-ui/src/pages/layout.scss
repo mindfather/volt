@@ -1,0 +1,55 @@
+@import "../assets/colors";
+
+a {
+    text-decoration: none !important;
+}
+
+.layout {
+    background-color: $background;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+
+.header {
+    max-width: 200px;
+    padding-left: 24px;
+    padding-right: 24px;
+    background-color: $nav;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+}
+
+.title {
+    margin-bottom: 16px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.titletext {
+    color: $main;
+    line-height: 1.33;
+    min-height: 16px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.nav {
+    color: $background;
+    font-weight: bold;
+ }
+
+.content {
+    width: 100%;
+}
