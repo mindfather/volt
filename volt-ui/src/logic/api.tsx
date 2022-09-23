@@ -1,9 +1,27 @@
-import { Urbit } from "@urbit/http-api";
+import { Urbit, AuthenticationInterface } from "@urbit/http-api";
 import { Pokes } from "./enums";
 import { createContext } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createStore, produce } from "solid-js/store";
 
-const APP = "volt";
+const UrbitState =  {
+  urbit: null,
+  airlock : null,
+  state: {
+    subscriptionId: 0,
+    provider: {
+      ship: "",
+      connected: false
+    },
+    btcprovider: {
+      ship: "",
+      connected: false
+    },
+    channels: {
+      live: [],
+      larval: []
+    }
+  }
+};
 
 export async function createUrbit() {
   const urbit     = new Urbit("", "", "volt");
@@ -18,29 +36,22 @@ export async function createUrbit() {
     code: "lidlut-tabwed-pillex-ridrup",
   });
 
-  const subscriptionId = await airlock.subscribe({
-    app: APP,
-    path: '/all',
-    err: handleError,
-    event: handleSubscription,
-    quit: handleQuit,
-  });
 
-  return {urbit, airlock, subscriptionId};
+    return {urbit, airlock, state:UrbitState.state};
 }
 
-export const UrbitContext = createContext([{ urbit: null, airlock : null, subscriptionId: null }, {}]);
+export const UrbitContext = createContext([UrbitState, {}]);
 
 export function UrbitProvider(props) {
-  const [data, api] = createStore({
+  const [data, setData] = createStore({
       urbit: props.urbit || null,
       airlock: props.airlock || null,
-      subscriptionId: props.subscriptionId || null,
+      state: props.state || null,
   });
 
   const poke = async (mark: Pokes, json) => {
     const p = await data.airlock.poke ({
-      app: APP,
+      app: 'volt',
       mark,
       json,
     });
@@ -50,41 +61,24 @@ export function UrbitProvider(props) {
 
   const scry = async (app, path) => {
       const s = await data.airlock.scry({app, path});
-      console.log(s);
       return s;
   }
 
   const urbit = [
     data,
     {
-      setProvider(provider: string, err, callback) {
-        poke(Pokes.Command, {"set-provider": provider}).catch(err).then(callback);
+      sendPoke({pokeType, json}, err, callback) {
+        poke(pokeType, json).catch(err).then(callback);
       },
-      setBTCProvider(provider: string, err, callback) {
-        poke(Pokes.Command, {"set-btc-provider": provider}).catch(err).then(callback);
+
+      setState(path: string[], data) {
+        setData("state", ...path, data);
       },
-      closeChannel(chanId, err, callback) {
-        poke(Pokes.Command, {"close-channel": chanId}).catch(err).then(callback);
-      },
-      sendPayment(payreq, err, callback) {
-        poke(Pokes.Command, {"send-payment": payreq}).catch(err).then(callback);
-      },
-      openChannel(json: {who, funding, push, network}, err, callback) {
-        poke(Pokes.Command, {"open-channel": json}).catch(err).then(callback);
-      },
-      createFunding({temporaryChannelId, psbt}, err, callback) {
-        poke(Pokes.Command, {
-            "create-funding": {
-                "temporary-channel-id": temporaryChannelId,
-                "psbt": psbt
-            }
-        }).catch(err).then(callback);
-      },
-      addInvoice(json: {amount, memo, network}, err, callback) {
-          poke(Pokes.Command, {"add-invoice": json}).catch(err).then(callback);
-      },
-      s() {
-        scry("volt", "/provider");
+
+      addChannel(channelType, channel) {
+          setData("state", "channels", channelType, produce((channels) => {
+              channels.push(channel);
+          }));
       }
     }
   ];
@@ -94,20 +88,4 @@ export function UrbitProvider(props) {
       {props.children}
     </UrbitContext.Provider>
   );
-}
-
-
-const handleSubscription = (data) => {
-  debugger;
-  console.log('FROM SUBSCRIPTION');
-  console.log(data);
-}
-const handleError = (data) => {
-  debugger;
-  console.log('FROM ERROR');
-  console.log(data);
-}
-const handleQuit= (data) => {
-  console.log('FROM QUIT');
-  console.log(data);
 }

@@ -14,8 +14,6 @@
   $%  state-0
   ==
 ::
-+$  provider-state  [host=ship connected=?]
-::
 +$  closing-state
   $:  initiator=ship
       max-fee=sats:bc
@@ -139,7 +137,6 @@
       ==
     [cards this]
   ::
-  :: :~  (give-update [%ack-received `@tas`%set-provider])
       %watch-ack
     ?:  ?=(%set-provider -.wire)
       ?~  p.sign
@@ -164,7 +161,8 @@
   ?+    path  (on-watch:def path)
       [%all ~]
     ?>  (team:title our.bowl src.bowl)
-    `this
+    :_  this
+    [give-initial:hc]~
   ==
 ::
 ++  on-arvo   on-arvo:def
@@ -180,7 +178,16 @@
       :~  [%'provider' (ship:enjs:format host.u.volt.prov)]
           [%'connected' b+connected.u.volt.prov]
       ==
-    ~&  result
+    ``json+!>(result)
+  ::
+      [%x %btcprovider ~]
+    =/  result=json
+      %-  pairs:enjs:format
+      ?~  btcp.prov
+        ~
+      :~  [%'provider' (ship:enjs:format host.u.btcp.prov)]
+          [%'connected' b+connected.u.btcp.prov]
+      ==
     ``json+!>(result)
   ::
   ==
@@ -1196,10 +1203,14 @@
 ++  handle-provider-status
   |=  =status:provider
   ^-  (quip card _state)
-  ?~  volt.prov  `state
-  ?:  =(status %connected)
-    `state(volt.prov `u.volt.prov(connected %.y))
-  `state(volt.prov `u.volt.prov(connected %.n))
+  =^  cards  state
+    ?~  volt.prov  `state
+    ?:  =(status %connected)
+      `state(volt.prov `u.volt.prov(connected %.y))
+    `state(volt.prov `u.volt.prov(connected %.n))
+  :_  state
+  :-  (give-update [%provider-ack (need volt.prov)])
+  cards
 ::
 ++  handle-provider-update
   |=  =update:provider
@@ -1313,31 +1324,35 @@
 ++  handle-bitcoin-status
   |=  =status:btc-provider
   ^-  (quip card _state)
-  ?~  btcp.prov  `state
-  ?.  =(host.u.btcp.prov src.bowl)  `state
-  ?-    -.status
-      %new-block
-    :_  %=  state
-          btcp.prov  `u.btcp.prov(connected %.y)
-          chain      [block.status fee.status now.bowl]
-        ==
-    %+  turn  ~(val by wach.chan)
-    |=  =id:bolt
-    %-  poke-btc-provider
-    :-  %address-info
-    %~  funding-address  channel
-    (~(got by live.chan) id)
-  ::
-      %connected
-    :-  ~
-    %=  state
-      btcp.prov  `u.btcp.prov(connected %.y)
-      chain      [block.status fee.status now.bowl]
-    ==
-  ::
-      %disconnected
-    `state(btcp.prov `u.btcp.prov(connected %.n))
+  =^  cards  state
+    ?~  btcp.prov  `state
+    ?.  =(host.u.btcp.prov src.bowl)  `state
+    ?-    -.status
+        %new-block
+      :_  %=  state
+            btcp.prov  `u.btcp.prov(connected %.y)
+            chain      [block.status fee.status now.bowl]
+          ==
+      %+  turn  ~(val by wach.chan)
+      |=  =id:bolt
+      %-  poke-btc-provider
+      :-  %address-info
+      %~  funding-address  channel
+      (~(got by live.chan) id)
+    ::
+        %connected
+      :-  ~
+      %=  state
+        btcp.prov  `u.btcp.prov(connected %.y)
+        chain      [block.status fee.status now.bowl]
+      ==
+    ::
+        %disconnected
+      `state(btcp.prov `u.btcp.prov(connected %.n))
   ==
+  :_  state
+  :-  (give-update [%btc-provider-ack (need btcp.prov)])
+  cards
 ::
 ++  handle-bitcoin-update
   |=  =update:btc-provider
@@ -1841,6 +1856,30 @@
       ==
     ==
    ~
+::
+++  give-initial
+  ^-  card
+  %-  give-update
+  ^-  update
+  =/  larva=(map id:bolt larv-chan)  (~(run by larv.chan) client-larva)
+  :*  %initial
+      volt.prov
+      btcp.prov
+      larva
+  ==
+::
+++  client-larva
+  |=  larva-chan=larva-chan:bolt
+  ^-  larv-chan
+  =/  oc=open-channel:msg:bolt  (need oc.larva-chan)
+  =/  ac=accept-channel:msg:bolt  (need ac.larva-chan)
+  =+  ^=  funding-address
+    ^-  address:bc
+    %^    make-funding-address:channel
+        network.our.larva-chan
+      pub.multisig-key.our.larva-chan
+    funding-pubkey.oc
+  `larv-chan`[funding-sats.oc funding-address dust-limit-sats.ac]
 ::
 ++  leave-provider
   |=  who=@p

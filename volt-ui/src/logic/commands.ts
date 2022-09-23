@@ -1,33 +1,38 @@
-export const Commands = {
-  setProvider     : (provider: string) => ({"set-provider": provider}),
-  setBTCProvider  : (provider: string) => ({"set-btc-provider": provider}),
-  closeChannel    : (chanId: number)   => ({"chan-id": chanId}),
-  sendPayment     : (payreq)   => ({"payreq": payreq}),
-  openChannel     : (who: string, funding, push, network: string) => (
-                      {
-                        "open-channel": {
-                          "who": who,
-                          "funding": funding,
-                          "push": push,
-                          "network": network
-                        }
-                      }
-                    ),
-  createFunding   : (temporaryChannelId: number, psbt) => (
-                      {
-                        "create-funding": {
-                          "temporary-channel-id": temporaryChannelId,
-                          "psbt": psbt
-                        }
-                      }
-                    ),
-  addInvoice      : (amount: number, memo: string, network: string) => (
-                      {
-                        "add-invoice": {
-                          "amount": amount,
-                          "memo": memo,
-                          "network": network
-                        }
-                      }
-                    )
-}
+import { Pokes } from "./enums";
+
+const createPoke = (json) => { return {
+  pokeType : Pokes.Command,
+  json
+}};
+
+export const setProvider    = (provider: string) => createPoke({ "set-provider": provider });
+
+export const setBTCProvider = (provider: string) => createPoke({ "set-btc-provider": provider });
+
+export const closeChannel   = (chanId: number)   => createPoke({ "close-channel": chanId });
+
+export const sendPayment    = (payreq)   => createPoke({ "send-payment": payreq });
+
+export const openChannel    = (who, funding, push, network) => createPoke({
+  "open-channel": {
+    "who": who,
+    "funding-sats": funding,
+    "push-msats": push,
+    "network": network
+  }
+});
+
+export const createFunding  = (temporaryChannelId: number, psbt) => createPoke({
+  "create-funding": {
+    "temporary-channel-id": temporaryChannelId,
+    "psbt": psbt
+  }
+});
+
+export const addInvoice     = (amount: number, memo: string, network: string) => createPoke({
+  "add-invoice": {
+    "amount": amount,
+    "memo": memo,
+    "network": network
+  }
+});

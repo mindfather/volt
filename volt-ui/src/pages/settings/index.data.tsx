@@ -1,7 +1,8 @@
 import { useContext } from "solid-js";
 import { UrbitContext } from "../../logic/api";
+import { setProvider, setBTCProvider } from "../../logic/commands";
 import { createStore } from "solid-js/store"
-import { invalidName } from "../../util/names";
+
 
 function checkValid({ element, validators = [] }, setErrors) {
   return async () => {
@@ -25,7 +26,11 @@ function checkValid({ element, validators = [] }, setErrors) {
 }
 
 function callbacks(api) {
-    const onSuccess = (form) => {
+    const onSuccess = (provider, ship, form) => {
+        api.setState([provider], {
+            ship,
+            connected: null
+        });
         let buttonText = form.querySelector('.field > button > .submit');
         let temp = buttonText.innerHTML;
         buttonText.classList.add('success');
@@ -39,13 +44,21 @@ function callbacks(api) {
     const setProviderNode = (form) => {
         let provider: string = form.elements['provider'].value;
         provider = provider.charAt(0) === '~' ? provider : '~' + provider;
-        api.setProvider(provider, (err) => {}, (_) => onSuccess(form));
+        api.sendPoke(
+            setProvider(provider),
+            (err) => {},
+            (_) => onSuccess('provider', provider, form)
+        );
     };
 
     const setBTCProviderNode = (form) => {
         let provider: string = form.elements['btcprovider'].value;
         provider = provider.charAt(0) === '~' ? provider : '~' + provider;
-        api.setBTCProvider(provider, (err) => {}, (_) => onSuccess(form));
+        api.sendPoke(
+            setBTCProvider(provider),
+            (err) => {},
+            (_) => onSuccess('provider', provider, form)
+        );
     };
 
     return {
@@ -73,8 +86,6 @@ export default function SettingsData() {
         const callback = accessor() || (() => {});
         ref.setAttribute("novalidate", "");
         ref.onsubmit = async (e) => {
-            console.log(e);
-            console.log(fields);
             e.preventDefault();
             const field = fields[e.srcElement.id];
             await checkValid(field, setErrors)();

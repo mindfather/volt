@@ -19,3 +19,26 @@ export const invalidName = (name) => {
   });
   return error || false;
 };
+
+export function satsToCurrency(
+  sats: number,
+  denomination: Denomination,
+  rates: CurrencyRate
+) {
+  if (!rates) {
+    throw 'nonexistent currency table';
+  }
+  if (!rates[denomination]) {
+    denomination = 'BTC';
+  }
+  let rate = rates[denomination];
+  let val = rate ? parseFloat((sats * rate.last * 0.00000001).toFixed(8)) : 0;
+  let text;
+  if (denomination === 'BTC' && rate) {
+    text = val + ' ' + rate.symbol;
+  } else if (rate) {
+    text =
+      rate.symbol + val.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  }
+  return text;
+};

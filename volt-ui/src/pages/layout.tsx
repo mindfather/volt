@@ -5,8 +5,8 @@ import logo from "../assets/Lightning_Network.svg";
 
 export default function Layout() {
     let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const {data: {state}} = useRouteData();
 
-    const layout = useRouteData();
     return (
         <div class="layout">
             <div class="header">
@@ -17,6 +17,20 @@ export default function Layout() {
 
                 <div class="actions">
                     <Link class="nav" href="/apps/volt/settings">Settings</Link>
+                </div>
+                <div class="status">
+                    <span class="provider">
+                        <h6>Lightning Provider:</h6>
+                        <span class={state.provider.connected == null? "connecting" : state.provider.connected ? "connected" : "disconnected" }>
+                            {state.provider.ship}
+                        </span>
+                    </span>
+                    <span class="btcprovider">
+                        <h6>Bitcoin Provider:</h6>
+                        <span class={state.btcprovider.connected == null? "connecting" : state.btcprovider.connected ? "connected" : "disconnected" }>
+                            {state.btcprovider.ship}
+                        </span>
+                    </span>
                 </div>
             </div>
             <div class="content">

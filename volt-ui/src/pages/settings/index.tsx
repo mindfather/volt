@@ -1,6 +1,6 @@
 import { useRouteData } from "@solidjs/router";
 import { createStore } from "solid-js/store";
-import { invalidName } from "../../util/names";
+import { invalidName } from "../../util";
 
 import "./settings.scss";
 

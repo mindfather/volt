@@ -12,6 +12,8 @@
 +$  chan-id  id:bolt
 +$  htlc-id  htlc-id:bolt
 ::
++$  provider-state  [host=ship connected=?]
+::
 +$  node-info
   $:  version=@t
       commit-hash=@t
@@ -269,6 +271,12 @@
       preimage=(unit preimage)
   ==
 ::
++$  larv-chan
+  $:  =funding=sats:bc
+      funding-address=address:bc
+      =dust-limit=sats:bc
+  ==
+::
 +$  forward-request
   $:  htlc=update-add-htlc:msg:bolt
       =payreq
@@ -294,8 +302,15 @@
   ==
 ::
 +$  update
-  $%  [%need-funding-signature temporary-channel-id=@ =address:bc]
+  $%  $:  %initial
+        provider=(unit provider-state)
+        btc-provider=(unit provider-state)
+        larva=(map id:bolt larv-chan)
+      ==
+      [%need-funding-signature temporary-channel-id=@ =address:bc]
       [%channel-state =chan-id =chan-state:bolt]
+      [%provider-ack =provider-state]
+      [%btc-provider-ack =provider-state]
       [%received-payment from=ship =amt=msats]
   ==
 --
