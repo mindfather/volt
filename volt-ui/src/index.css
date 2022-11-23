@@ -1,6 +1,7 @@
 * {
   margin: 0;
   font-family: Inter, "Inter UI", -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Arial, sans-serif;
+  color: var(--base01);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -8,4 +9,73 @@
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--hl);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--base1);
+}
+
+/* COLORS */
+
+:root {
+  --main:    #7B1AF7;
+  --base03:  #002b36;
+  --base02:  #073642;
+  --base01:  #586e75;
+  --base00:  #657b83;
+  --base0:   #839496;
+  --base1:   #93a1a1;
+  --base2:   #eee8d5;
+  --base3:   #fdf6e3;
+  --yellow:  #b58900;
+  --orange:  #cb4b16;
+  --red:     #dc322f;
+  --magenta: #d33682;
+  --violet:  #6c71c4;
+  --blue:    #268bd2;
+  --cyan:    #2aa198;
+  --green:   #859900;
+  --fg:      var(--base00);
+  --bg:      var(--base3);
+  --hl:      var(--base2);
+  --emph:    var(--base01);
+  --comment: var(--base1);
+}
+
+/* CLASSES */
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.loader {
+  border: 6px solid var(--hl);
+  border-top: 6px solid var(--blue);
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+  animation: spin 2s linear infinite
+}
+
+/* ANIMATIONS */
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

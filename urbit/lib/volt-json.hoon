@@ -15,7 +15,7 @@
       [%set-btc-provider (mu ship)]
       [%open-channel open-channel]
       [%create-funding create-funding]
-      [%close-channel ni]
+      [%close-channel temporary-channel-id]
       [%send-payment send-payment]
       [%add-invoice add-invoice]
     ==
@@ -55,7 +55,7 @@
   ++  add-invoice
     %-  ot
     :~
-      [%amount ni]
+      [%amount-msats ni]
       [%memo (mu so)]
       [%network (mu network)]
     ==
@@ -75,6 +75,7 @@
       %provider-ack            (provider-ack upd)
       %btc-provider-ack        (btc-provider-ack upd)
       %received-payment        (received-payment upd)
+      %new-payreq              [%s p=payreq.upd]
     ==
   ::
   ++  need-funding-signature
@@ -91,7 +92,7 @@
     ?>  ?=(%channel-state -.upd)
     ^-  json
     %-  pairs
-    :~  chan-id+(numb chan-id.upd)
+    :~  chan-id+s+(en:base64:mimes:html [(met 3 chan-id.upd) chan-id.upd])
         chan-state+s+chan-state.upd
     ==
   ::
@@ -138,6 +139,17 @@
         data+(larva-content v)
     ==
   ::
+  ++  live
+    |=  l=(map id:bolt live-chan:volt)
+    ^-  json
+    :-  %a
+    %+  turn  ~(tap by l)
+    |=  [k=@ v=live-chan:volt]
+    %-  pairs
+    :~  channel-id+s+(en:base64:mimes:html [(met 3 k) k])
+        data+(live-content v)
+    ==
+  ::
   ++  larva-content
     |=  [l=larv-chan:volt]
     ^-  json
@@ -145,8 +157,39 @@
     :~  dust-limit-sats+(numb dust-limit-sats.l)
         funding-address+(address:enjs:bcj funding-address.l)
         funding-sats+(numb funding-sats.l)
+        who+(ship who.l)
     ==
   ::
+  ++  live-content
+    |=  [l=live-chan:volt]
+    ^-  json
+    %-  pairs
+    :~  sats-capacity+(numb sats-capacity.l)
+        state+s+state.l
+        who+(ship who.l)
+        balance+(numb balance.l)
+    ==
+  ::
+::++  incoming-payments
+::  |=  l=(map id:bolt payreq-client:volt)
+::  ^-  json
+::  :-  %a
+::  %+  turn  ~(tap by l)
+::  |=  [k=@ v=payment-request:volt]
+::  %-  pairs
+::  :~  hex+s+(hexb:en:bc k)
+::      payer+(ship payer.v)
+::      payee+(ship payee.v)
+::      amount-msats+(numb amount-msats.v)
+::      payment-hash+(hexb:en:bc payment-hash.v)
+::  ==
+::::
+::++  payment-request
+::  |=  [p=payment-request:volt]
+::  ^-  json
+::  %-  pairs
+::  ==
+::::
   ++  initial
     |=  upd=update:volt
     ?>  ?=(%initial -.upd)
@@ -155,6 +198,7 @@
     :~  provider+(provider-state provider.upd)
         btc-provider+(provider-state btc-provider.upd)
         larva+(larv larva.upd)
+        live+(live live.upd)
     ==
   ::
   --

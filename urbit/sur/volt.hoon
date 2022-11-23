@@ -275,12 +275,28 @@
   $:  =funding=sats:bc
       funding-address=address:bc
       =dust-limit=sats:bc
+      who=ship
+  ==
+::
++$  live-chan
+  $:  sats-capacity=sats:bc
+      state=chan-state:bolt
+      who=ship
+      balance=msats
   ==
 ::
 +$  forward-request
   $:  htlc=update-add-htlc:msg:bolt
       =payreq
       forwarded=?
+  ==
+::
++$  transaction
+  $:  payer=ship
+      payee=ship
+      =payment=hash
+      =amount=msats
+      date=@da
   ==
 ::
 +$  command
@@ -306,11 +322,13 @@
         provider=(unit provider-state)
         btc-provider=(unit provider-state)
         larva=(map id:bolt larv-chan)
+        live=(map id:bolt live-chan)
       ==
       [%need-funding-signature temporary-channel-id=@ =address:bc]
       [%channel-state =chan-id =chan-state:bolt]
       [%provider-ack =provider-state]
       [%btc-provider-ack =provider-state]
       [%received-payment from=ship =amt=msats]
+      [%new-payreq =payreq]
   ==
 --

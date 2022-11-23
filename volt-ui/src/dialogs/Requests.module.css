@@ -1,0 +1,149 @@
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.payer,
+.payee {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.amount {
+    margin-bottom: 20px;
+}
+
+.sats,.fiat {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+
+}
+
+.fiat {
+    position: relative;
+    bottom: 1px;
+}
+
+.payer > .label,
+.payee > .label {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.sats > .label {
+    border-top-left-radius: 12px;
+}
+.fiat > .label {
+    border-bottom-left-radius: 12px;
+}
+
+.payer > .input,
+.payee > .input {
+    position: relative;
+    top: 1px;
+    right: 1px;
+    border: 2px solid var(--base02);
+    border-left: none;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.sats > .input {
+    border: 2px solid var(--base02);
+    border-left: none;
+    border-top-right-radius: 12px;
+}
+
+.fiat > .fiatvalue {
+    width: 411px;
+    height: 36px;
+    border: 2px solid var(--base02);
+    border-left: none;
+    border-bottom-right-radius: 12px;
+    padding-right: 8px;
+}
+
+.label{
+    width: 85px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 18pt;
+    font-weight: lighter;
+    color: var(--bg);
+    background-color: var(--base02);
+    position: relative;
+}
+
+.memo {
+    padding: 8px;
+    background: var(--bg);
+    font-size: 20pt;
+    border: none;
+    resize: none;
+    border-radius: 12px;
+    scrollbar-width: thin;
+    margin-bottom:8px;
+}
+.memo:focus {
+    outline: 2px solid var(--base02);
+}
+
+.submit {
+    background-color: var(--bg);
+    border: 2px solid var(--base02);
+    transition: background-color 0.5s,
+                color 0.5s,
+                border-color 0.5s;
+    cursor: pointer;
+    border-radius: 12px;
+    height: 80px;
+    max-width: 120px;
+    margin-left: 20px;
+    font-size: 18pt;
+}
+
+.submit:hover {
+    background-color: var(--hl);
+    border-color: var(--green);
+    color: var(--green);
+}
+
+.input, .fiatvalue {
+    padding-right: 8px;
+    width: 409px;
+    border: none;
+    font-size: 22pt;
+    background: var(--bg);
+    outline: none;
+    text-align: end;
+}
+
+hr {
+    border-color: var(--fg);
+    border-top: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+::placeholder {
+  color: var(--base2);
+  opacity: 1;
+}

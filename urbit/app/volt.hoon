@@ -54,6 +54,7 @@
       $=  payments
       $:  outgoing=(map hexb:bc forward-request)
           incoming=(map hexb:bc payment-request)
+::          transactions=(map htlc-id:bolt transaction)
           preimages=(map hexb:bc hexb:bc)
       ==
   ==
@@ -389,6 +390,8 @@
     ?:  (~(has by shut.chan) chan-id)
       ~&  >>>  "%volt: channel already closing"
       `state
+    ?:  (~(has by larv.chan) chan-id)
+      `state(larv.chan (~(del by larv.chan) chan-id))
     =+  c=(~(get by live.chan) chan-id)
     ?~  c  `state
     =|  close=closing-state
@@ -1151,8 +1154,9 @@
     ==
   ::
       %take-invoice
-    %-  (slog leaf+"{<payreq.action>}" ~)
-    `state
+    :_  state
+    ~&  payreq.action
+    ~[(give-update [%new-payreq payreq.action])]
   ::
       %give-pubkey
     =+  secp256k1:secp:crypto
@@ -1190,6 +1194,15 @@
         payreq     payreq.action
         forwarded  %.n
       ==
+    =|  t=transaction
+    =.  t
+      %=  t
+        payer         src.bowl
+        payee         our.bowl
+        payment-hash  payment-hash.her-htlc
+        amount-msats  amount-msats.her-htlc
+      ==
+    ~&  t
     :-  ~
     %=    state
         live.chan
@@ -1197,6 +1210,9 @@
     ::
         outgoing.payments
       (~(put by outgoing.payments) payment-hash.her-htlc req)
+    ::
+    ::    transactions.payments
+    ::  (~(put by transactions.payments) htlc-id.her-htlc t)
     ==
   ==
 ::
@@ -1368,6 +1384,21 @@
     `state
   ::
       %raw-tx
+    `state
+  ::
+      %block-headers
+    `state
+  ::
+      %fee
+    `state
+  ::
+      %histogram
+    `state
+  ::
+      %psbt
+    `state
+  ::
+      %tx-from-pos
     `state
   ::
       %broadcast-tx
@@ -1862,24 +1893,37 @@
   %-  give-update
   ^-  update
   =/  larva=(map id:bolt larv-chan)  (~(run by larv.chan) client-larva)
+  =/  live=(map id:bolt live-chan)  (~(run by live.chan) client-live)
   :*  %initial
       volt.prov
       btcp.prov
       larva
+      live
   ==
+::
+++  client-live
+  |=  live-channel=chan:bolt
+  ^-  live-chan
+  `live-chan`[capacity.constraints.live-channel state.live-channel ship.-.her.config.live-channel balance.our.i.-.our.commitments.live-channel]
+::
+::++  client-payreq
+::  |=  payreq=payment-request
+::  ^-  payreq-client
+::  `payreq-client`[capacity.constraints.live-channel state.live-channel]
 ::
 ++  client-larva
   |=  larva-chan=larva-chan:bolt
   ^-  larv-chan
   =/  oc=open-channel:msg:bolt  (need oc.larva-chan)
-  =/  ac=accept-channel:msg:bolt  (need ac.larva-chan)
+  =/  ac=accept-channel:msg:bolt  (fall ac.larva-chan *accept-channel:msg:bolt)
   =+  ^=  funding-address
     ^-  address:bc
     %^    make-funding-address:channel
         network.our.larva-chan
       pub.multisig-key.our.larva-chan
     funding-pubkey.oc
-  `larv-chan`[funding-sats.oc funding-address dust-limit-sats.ac]
+  ~&  funding-address
+  `larv-chan`[funding-sats.oc funding-address dust-limit-sats.ac ship.-.her.larva-chan]
 ::
 ++  leave-provider
   |=  who=@p

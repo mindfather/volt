@@ -2,6 +2,22 @@
 
 Lightning on Urbit
 
+## Quick Setup ()
+```
+|merge %volt our %bitcoin
+|mount %volt
+*copy volt files over*
+|commit %volt
+|install our %volt
+|rein %bitcoin [& %btc-provider]
+:btc-provider +bitcoin!btc-provider/command [%set-credentials api-url='http://localhost:50002' %testnet]
+|rein %volt [& %volt-provider]
+:volt-provider|command [%set-url 'http://localhost:5000']
+|rein %volt [& %volt]
+:volt|command [%set-provider `~zod]
+:volt|command [%set-btc-provider `~zod]
+```
+
 ## Setup
 
 Follow the [LND install guide](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md) and install LND on your host.

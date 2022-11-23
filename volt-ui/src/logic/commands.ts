@@ -9,7 +9,7 @@ export const setProvider    = (provider: string) => createPoke({ "set-provider":
 
 export const setBTCProvider = (provider: string) => createPoke({ "set-btc-provider": provider });
 
-export const closeChannel   = (chanId: number)   => createPoke({ "close-channel": chanId });
+export const closeChannel   = (chanId: string)   => createPoke({ "close-channel": chanId });
 
 export const sendPayment    = (payreq)   => createPoke({ "send-payment": payreq });
 
@@ -31,7 +31,7 @@ export const createFunding  = (temporaryChannelId: number, psbt) => createPoke({
 
 export const addInvoice     = (amount: number, memo: string, network: string) => createPoke({
   "add-invoice": {
-    "amount": amount,
+    "amount-msats": amount,
     "memo": memo,
     "network": network
   }

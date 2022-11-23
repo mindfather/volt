@@ -1,0 +1,142 @@
+.transaction {
+    display: grid;
+
+    grid-template-columns:
+        [info-start]
+        276px
+        [info-end]
+        8px
+        [from-start]
+        240px
+        [from-end]
+        5px
+        [arrow-start]
+        20px
+        [arrow-end]
+        5px
+        [to-start]
+        240px
+        [to-end]
+        auto
+        [amount-start]
+        100px
+        [amount-end]
+    ;
+
+    align-items: center;
+    max-width: 100%;
+    padding:10px;
+    border-bottom: 1px solid var(--fg);
+}
+
+.info,.who,.amount {
+    margin-top: auto;
+    margin-bottom: auto;
+    display: flex;
+}
+
+.info {
+    grid-column: info-start / info-end;
+    vertical-align: end;
+}
+
+.who {
+    grid-column: who-start / who-end;
+    align-items: center;
+    justify-content: start;
+}
+
+.amount {
+    grid-column: amount-start / amount-end;
+    align-items: start;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.icon {
+    border: 1px solid var(--base02);
+    height: 40px !important;
+    width: 40px !important;
+    display:flex;
+    justify-content: center;
+}
+
+.icon > svg {
+    height: 32px !important;
+    width: 32px;
+    margin: auto;
+    fill: var(--base02);
+}
+
+.action {
+    font-size: 24px;
+    line-height:42px;
+    color: var(--base03);
+    margin-left: 8px;
+}
+.timestamp {
+    font-size: 16px;
+    color: var(--base00);
+    margin-left: 0.5ch;
+
+}
+
+.who > svg {
+    margin-right: 4px;
+}
+
+.who > span {
+    margin-left: 4px;
+    margin-right: 4px;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    font-weight: 500;
+    color: var(--base02);
+}
+
+.from {
+    grid-column: from-start / from-end;
+    justify-content: end;
+}
+
+.to {
+    grid-column: to-start / to-end;
+    justify-content: start;
+}
+
+.from,.to {
+    display: flex;
+    font-size: 22px;
+    align-items: center;
+    color: var(--base02);
+}
+
+.from > svg,.to > svg {
+    margin-right: 4px;
+}
+
+.arrow {
+    margin: 0 auto;
+    grid-column: arrow-start / arrow-end;
+    width: 12px;
+    fill: var(--base02);
+}
+
+.amount {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+.sats, .sats > * {
+    color: var(--base02);
+    font-size: 18px;
+}
+.fiat, .fiat > * {
+    color: var(--base01);
+    font-size: 14px;
+}
+
+transaction:last-child {
+    border-bottom: none;
+}

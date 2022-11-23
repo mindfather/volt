@@ -1,23 +1,20 @@
 /* @refresh reload */
 import {lazy} from "solid-js";
 import { render } from 'solid-js/web';
-import { Router, useRoutes } from "@solidjs/router";
-import { UrbitProvider, createUrbit} from './logic/api';
+import { VoltProvider } from './logic/api';
+import { VoltState } from './types/state';
+import Volt from './Volt';
 
 import routes from "./routes"
 import './index.css';
 
-export const Outlet = useRoutes(routes);
-
-let urbit = await createUrbit();
+let voltState = new VoltState();
 
 render(
     () => (
-        <UrbitProvider {...urbit}>
-            <Router routes={routes} root={process.env.PUBLIC_URL}>
-                <Outlet />
-            </Router>
-        </UrbitProvider>
+        <VoltProvider {...voltState}>
+            <Volt />
+        </VoltProvider>
     ),
     document.body
 );

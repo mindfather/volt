@@ -1,0 +1,191 @@
+.layout {
+    background-color: var(--hl);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.header {
+    grid-column: web-start / web-end;
+    grid-row: nav-start / nav-end;
+    display: grid;
+    align-items: center;
+}
+
+.name {
+    grid-column: name-start / name-end;
+    font-size: 28px;
+    color: var(--green);
+    font-weight: 600;
+    letter-spacing: .025em;
+    cursor: default;
+    user-select: none;
+}
+
+.provider {
+    grid-column: provider-start / provider-end;
+}
+
+.btcprovider {
+    grid-column: btcprovider-start / btcprovider-end;
+}
+
+.content {
+    display: grid;
+}
+
+.actions {
+    display: grid;
+    grid-auto-flow: row dense;
+}
+
+/* Desktop */
+@media (min-width: 1280px) {
+    .layout {
+        display: grid;
+        grid-template-columns:
+            minmax(0, 25vw)
+            [web-start]
+                1280px
+            [web-end]
+            minmax(0, 25vw)
+        ;
+
+        grid-template-rows:
+            [start]
+                1vh
+                [nav-start]
+                40px
+                [nav-end]
+                1vh
+                [content-start]
+                minmax(360px,auto)
+                [content-end]
+                2vmin
+            [end];
+    }
+
+    .content {
+        grid-template-columns:
+            [start balance-start]
+            minmax(36%, auto)
+            [balance-end]
+            6px
+            [actions-start]
+            96px
+            [actions-end]
+            6px
+            [channels-start]
+            minmax(50%, auto)
+            [channels-end end]
+        ;
+
+        grid-template-rows:
+            [
+                top-start
+                balance-start
+                actions-start
+                channels-start
+            ]
+            38%
+            [
+                top-end
+                balance-end
+                actions-end
+                channels-end
+            ]
+            2%
+            [transactions-start]
+            60%
+            [transactions-end]
+        ;
+    }
+
+    .header {
+        grid-template-columns:
+            [name-start]
+            80px
+            [name-end]
+            minmax(calc(100% - 560px),auto)
+            [provider-start]
+            fit-content(240px)
+            [provider-end]
+            10px
+            [btcprovider-start]
+            fit-content(240px)
+            [btcprovider-end]
+        ;
+    }
+
+    .actions {
+        grid-template-rows:
+            [send-start]
+            32%
+            [send-end]
+            2%
+            [newchannel-start]
+            32%
+            [newchannel-end]
+            2%
+            [request-start]
+            32%
+            [request-end];
+    }
+}
+
+@media (max-width: 1279px) {
+    .layout {
+        display: grid;
+        grid-template-rows:
+            [start]
+                1vh
+                [content-start]
+                minmax(360px,auto)
+                [content-end]
+                [actions-start]
+                minmax(32px, 10%)
+                [actions-end]
+            [end];
+    }
+
+    .content {
+        grid-template-columns:
+            [balance-start]
+            [actions-start]
+            [channels-start]
+            minmax(36%, auto)
+            [balance-end]
+            [actions-end]
+            [channels-end]
+        ;
+
+        grid-template-rows:
+            [top-start]
+            38%
+            [top-end]
+            2%
+            [transactions-start]
+            60%
+            [transactions-end]
+            [actions-start]
+            10%
+            [actions-end]
+        ;
+    }
+
+    .header {
+        grid-template-columns:
+            [name-start]
+            48px
+            [name-end]
+            auto
+            [provider-start]
+            160px
+            [provider-end]
+            10px
+            [btcprovider-start]
+            160px
+            [btcprovider-end]
+        ;
+    }
+}

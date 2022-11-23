@@ -9,6 +9,7 @@
 *.conf
 *.nix
 dev
+desk.docket-0
 *#
 node_modules
 LICENSE
