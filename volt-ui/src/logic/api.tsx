@@ -1,6 +1,6 @@
 import { Urbit, AuthenticationInterface } from "@urbit/http-api";
 import { Pokes } from "./enums";
-import { createContext, createSignal, createResource} from "solid-js";
+import { createContext, createSignal, createResource, batch} from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { VoltState } from "../types/state";
 import { dummyTransactions } from "../test";
@@ -74,38 +74,39 @@ export async function subscribeToFeed(state, api) {
                 let larva: any[] = resp['initial']['larva'];
                 let live: any[] = resp['initial']['live'];
 
-                api.setState("provider", {
-                    ship: '~' + provider.host,
-                    connected: provider.connected
-                });
-
-                api.setState("btcprovider", {
-                    ship: '~' + btcprovider.host,
-                    connected: btcprovider.connected
-                });
-
-                api.setState("channels", "larval", produce((channels) => {
-                  larva.forEach((channel) => {
-                    channels.push({
-                      channelId: channel['temporary-channel-id'],
-                      address: channel['data']['funding-address'],
-                      capacity: channel['data']['funding-sats'],
-                      who: channel['data']['who']
-                    });
+                batch(() => {
+                  api.setState("provider", {
+                      ship: '~' + provider.host,
+                      connected: provider.connected
                   });
-                }));
 
-                api.setState("channels", "live", produce((channels) => {
-                  live.forEach((channel) => {
-                    channels.push({
-                      channelId: channel['channel-id'],
-                      capacity: channel['data']['sats-capacity'],
-                      state: channel['data']['state'],
-                      who: channel['data']['who'],
-                      balance: channel['data']['balance']
-                    });
+                  api.setState("btcprovider", {
+                      ship: '~' + btcprovider.host,
+                      connected: btcprovider.connected
                   });
-                }));
+
+                  api.setState("channels", "larval", produce((channels) => {
+                    larva.forEach((channel) => {
+                      channels.push({
+                        channelId: channel['temporary-channel-id'],
+                        address: channel['data']['funding-address'],
+                        capacity: channel['data']['funding-sats'],
+                        who: channel['data']['who']
+                      });
+                    });
+                  }));
+                  api.setState("channels", "live", produce((channels) => {
+                    live.forEach((channel) => {
+                      channels.push({
+                        channelId: channel['channel-id'],
+                        capacity: channel['data']['sats-capacity'],
+                        state: channel['data']['state'],
+                        who: channel['data']['who'],
+                        balance: channel['data']['balance']
+                      });
+                    });
+                  }));
+                });
 
                 let map = new Map<string, Transaction[]>();
                 dummyTransactions.forEach((transaction) => {

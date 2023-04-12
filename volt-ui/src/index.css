@@ -73,6 +73,13 @@ code {
   animation: spin 2s linear infinite
 }
 
+
+/* Global Styles */
+*::placeholder {
+  color: var(--base0);
+  opacity: 1;
+}
+
 /* ANIMATIONS */
 
 @keyframes spin {

@@ -12,10 +12,8 @@ import { Balance } from "./components/Balance";
 import { Channels } from "./components/Channels";
 import { Transactions } from "./components/Transactions";
 
-
 import { ArrowDown, ArrowUp, ArrowRight, Minus, Plus, XMark } from "./assets/icons.tsx";
 import styles from './Volt.module.css';
-
 
 export default function Volt() {
     const [state, api] = useContext(VoltContext);

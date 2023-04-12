@@ -4,6 +4,8 @@ import { checkValid, validatorBuilder, formSubmitBuilder, validateName } from ".
 import { VoltContext } from "../logic/api";
 import { openChannel } from "../logic/commands";
 
+import styles from "./Requests.module.css";
+
 const NewChannel: Component<any> = (props) => {
     const [state, api] = useContext(VoltContext);
     const [errors, setErrors] = createStore({}),
@@ -34,26 +36,30 @@ const NewChannel: Component<any> = (props) => {
     };
 
     return (
-        <div class="new-channel">
-            <form id="open-channel" use:formSubmit={newChannelRequest}>
-                <div class="field">
-                    {errors.provider && <ErrorMessage error={errors.provider} class="error"/>}
-                    <input
-                        name="who"
-                        placeholder="e.g. ~fed"
-                        use:validate={[validateName]}
-                    />
+        <form id="newChannel"
+              use:formSubmit={newChannelRequest}
+              class={styles.form}>
 
-                    <input
-                        name="funding"
-                        type="number"
-                        placeholder="Funding amount in sats"
-                    />
+            {errors.provider && <ErrorMessage error={errors.provider} class="error"/>}
 
-                    <button type="submit"><span class="submit">Set</span></button>
-                </div>
-            </form>
-        </div>
+            <input
+                name="who"
+                autocomplete="off"
+                class={styles.field}
+                placeholder="e.g. ~fed"
+                use:validate={[validateName]}
+            />
+
+            <input
+                name="funding"
+                autocomplete="off"
+                class={styles.field}
+                type="number"
+                placeholder="Funding amount in sats"
+            />
+
+            <button type="submit" class={styles.submit}>Create New Channel</button>
+        </form>
     );
 }
 

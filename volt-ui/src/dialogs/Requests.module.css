@@ -1,3 +1,19 @@
+.success {
+    color: var(--green);
+}
+
+.generated {
+
+}
+
+.generated > .header {
+    margin-bottom: 10px;
+}
+
+.generated > .payreq {
+
+}
+
 .form {
     display: flex;
     flex-direction: column;
@@ -7,54 +23,6 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-}
-
-.payer,
-.payee {
-    display: flex;
-    flex-direction: row;
-    align-items: end;
-    margin-bottom: 20px;
-}
-
-.amount {
-    margin-bottom: 20px;
-}
-
-.sats,.fiat {
-    display: flex;
-    flex-direction: row;
-    align-items: end;
-
-}
-
-.fiat {
-    position: relative;
-    bottom: 1px;
-}
-
-.payer > .label,
-.payee > .label {
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
-}
-
-.sats > .label {
-    border-top-left-radius: 12px;
-}
-.fiat > .label {
-    border-bottom-left-radius: 12px;
-}
-
-.payer > .input,
-.payee > .input {
-    position: relative;
-    top: 1px;
-    right: 1px;
-    border: 2px solid var(--base02);
-    border-left: none;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
 }
 
 .sats > .input {
@@ -84,38 +52,38 @@
     position: relative;
 }
 
-.memo {
+.field, .amount, .memo {
     padding: 8px;
-    background: var(--bg);
     font-size: 20pt;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    background: var(--hl);
     border: none;
     resize: none;
-    border-radius: 12px;
-    scrollbar-width: thin;
-    margin-bottom:8px;
 }
-.memo:focus {
-    outline: 2px solid var(--base02);
+
+.memo {
+    padding: 8px;
+    scrollbar-width: thin;
+}
+
+.memo:focus, .amount:focus-within {
+    outline:1px solid var(--base1);
 }
 
 .submit {
-    background-color: var(--bg);
-    border: 2px solid var(--base02);
-    transition: background-color 0.5s,
-                color 0.5s,
-                border-color 0.5s;
+    color: var(--base3);
+    background-color: var(--base01);
+    border: none;
+    transition: background-color 0.5s;
     cursor: pointer;
     border-radius: 12px;
-    height: 80px;
-    max-width: 120px;
-    margin-left: 20px;
+    height: 60px;
     font-size: 18pt;
 }
 
 .submit:hover {
-    background-color: var(--hl);
-    border-color: var(--green);
-    color: var(--green);
+    background-color: var(--green);
 }
 
 .input, .fiatvalue {
@@ -141,9 +109,4 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
   -moz-appearance: textfield;
-}
-
-::placeholder {
-  color: var(--base2);
-  opacity: 1;
 }

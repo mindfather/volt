@@ -11,8 +11,8 @@ export const Clickable: Component<ClickableProps> = (props) => {
     let [hover, setHover] = createSignal(false);
     let iconClass = createMemo(() => { return {
         'fill': 'var(--base1)',
-        'width': '14px',
-        'height': '14px',
+        'max-width': '16px',
+        'max-height': '75%',
         'opacity': '0%',
         'margin-top': 'auto',
         'margin-bottom': 'auto',
@@ -36,19 +36,20 @@ export const Clickable: Component<ClickableProps> = (props) => {
     return (
         <span onMouseEnter={() => setHover(true)}
               onMouseLeave={() => setHover(false)}
+              onClick={copyToClipboard}
               style={{
-                'padding': '1px 6px 1px 8px',
+                'padding': '5px 6px 5px 8px',
+                'margin-top': 'auto',
+                'margin-bottom': 'auto',
                 'font-size': '14px',
                 'background-color': 'var(--hl)',
                 'border-radius': '10px',
-                'margin-top': 'auto',
-                'margin-bottom': 'auto',
                 'cursor':'pointer',
                 'display':'flex',
                 'justify-content':'space-between',
                 'align-items': 'center',
-        }}
-              onClick={copyToClipboard}>
+                'max-width':   '500px',
+        }}>
             <span style={{
                 'max-width': props.maxLength + 'ch',
                 'text-overflow': 'ellipsis',

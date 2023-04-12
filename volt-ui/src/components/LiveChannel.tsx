@@ -10,7 +10,15 @@ const row = {
     'justify-content': 'space-between'
 };
 
+const getClass = (state) => {
+    switch(state) {
+            case "open": return "var(--green)";
+            case "opening": return "var(--yellow)";
+    }
+}
+
 export const LiveChannel: Component<LiveChannelProps> = (props) => {
+    const stateClass = createMemo(() => getClass(props.state));
 
     let sigilConfig = {
         width:  64,
@@ -45,8 +53,10 @@ export const LiveChannel: Component<LiveChannelProps> = (props) => {
                         Balance: <BitcoinValue msatsbalance={props.balance} /> / <BitcoinValue satsbalance={props.capacity} />
                     </span>
 
-                    <span>
-                        {props.state}
+                    <span style={{
+                        'color': stateClass(),
+                    }}>
+                        %{props.state}
                     </span>
                 </div>
 

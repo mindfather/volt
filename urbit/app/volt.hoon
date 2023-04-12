@@ -54,8 +54,8 @@
       $=  payments
       $:  outgoing=(map hexb:bc forward-request)
           incoming=(map hexb:bc payment-request)
-::          transactions=(map htlc-id:bolt transaction)
           preimages=(map hexb:bc hexb:bc)
+          :: open=(map htlc-id:bolt invoice)
       ==
   ==
 --
@@ -1316,6 +1316,7 @@
       (pay-channel u.c value-msats.result r-hash.result)
     ?:  =(state.result %'SETTLED')
       `state(incoming.payments (~(del by incoming.payments) r-hash.result))
+    ::?:  =(state.result %'OPEN')
     `state
   ::
   ++  cancel-invoice

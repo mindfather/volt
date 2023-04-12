@@ -12,8 +12,8 @@ export const Loading = (props) => (
         ...(props.style!)
     }}>
         <span style={{
-            'border': '6px solid var(--hl)',
-            'border-top': '6px solid var(--cyan)',
+            'border': '6px solid ' + (props.background || 'var(--hl)'),
+            'border-top': '6px solid ' + (props.color || 'var(--green)'),
             'border-radius': '50%',
             'height': props.iconSize || '24px',
             'width': props.iconSize || '24px',

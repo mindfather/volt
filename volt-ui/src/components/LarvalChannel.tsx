@@ -63,25 +63,29 @@ export const LarvalChannel: Component<LarvalChannelProps> = (props) => {
                     Capacity: <BitcoinValue satsbalance={props.capacity} />
                 </span>
             </div>
-            <Show when={deleted()} fallback={
-                <ActionButton onClick={() => cancelChannel()}
-                            style={{'width': '96px', 'height': '64px', 'margin-right': '6px'}}
-                            iconStyle={{'height': '32px'}}
-                            hoverColor="var(--red)"
-                            fontSize='14px'
-                            icon={Remove}
-                            label='Cancel'/>
-            }>
+            <Show when={deleted()}
+                  fallback={<>
+                    <ActionButton onClick={() => {}}
+                                style={{'width': '96px', 'height': '64px', 'margin-right': '6px'}}
+                                iconStyle={{'height': '32px', 'margin-left': '10px'}}
+                                fontSize='14px'
+                                icon={Sign}
+                                label='Fund'/>
+                    <ActionButton onClick={() => cancelChannel()}
+                                style={{'width': '96px', 'height': '64px'}}
+                                iconStyle={{'height': '32px'}}
+                                hoverColor="var(--red)"
+                                fontSize='14px'
+                                icon={Remove}
+                                label='Cancel'/>
+                    </>}>
                 <Loading style={{'margin-right': '6px'}}
-                         label="Cancelling..."
+                         width="72px"
+                         height="60px"
+                         color="var(--red)"
+                         label='Cancelling'
                          button />
             </Show>
-            <ActionButton onClick={() => {}}
-                          style={{'width': '96px', 'height': '64px'}}
-                          iconStyle={{'height': '32px', 'margin-left': '10px'}}
-                          fontSize='14px'
-                          icon={Sign}
-                          label='Fund PSBT'/>
         </div>
     );
 }

@@ -270,6 +270,12 @@
       =payment=hash
       preimage=(unit preimage)
   ==
++$  transaction
+  $:  payee=ship
+      payer=ship
+      =payment=hash
+      =amount=msats
+  ==
 ::
 +$  larv-chan
   $:  =funding=sats:bc
@@ -291,11 +297,9 @@
       forwarded=?
   ==
 ::
-+$  transaction
-  $:  payer=ship
-      payee=ship
-      =payment=hash
-      =amount=msats
++$  openinvoice
+  $:  =payreq
+      memo=(unit @t)
       date=@da
   ==
 ::
